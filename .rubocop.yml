@@ -1,0 +1,8 @@
+# Offense count: 1
+Style/CyclomaticComplexity:
+  Max: 10
+
+# Offense count: 2
+# Configuration parameters: CountComments.
+Style/MethodLength:
+  Max: 22
