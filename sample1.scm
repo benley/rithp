@@ -14,15 +14,15 @@
   (define f
     (lambda (return) (begin (return 2) 1)))
 
-  (display (f (lambda (x) x))) ; Should output 1
+  (display (f (lambda (x) x)))  ; Should output 1
   (display (call/cc f))         ; Should output 2
 
-  (display (+ 1 2 3 4 5 6
-              (- 7 8 9 10)))   ; Variadic operators
-  (display (list "2^8 == " (* 2 2 2 2 2 2 2 2))) ; 256
+  ; Variadic operators:
+  (display (+ 1 2 3 4 5 6 (- 7 8 9 10)))
+  (display (list "2^8 ==" (* 2 2 2 2 2 2 2 2))) ; 256
 
   ; an indented comment
-  (display "hi") ; an inline comment
+  (display "hi") ; an inline comment with '"'\\\";;;'"obnoxious punctuation'!@#
   (display (list "foo" "bar" 23 "hi"))
   (display (list "Empty: list" (list)))
 
