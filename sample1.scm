@@ -15,7 +15,7 @@
     (lambda (return) (begin (return 2) 1)))
 
   (display (f (lambda (x) x))) ; Should output 1
-  (display (callcc f))         ; Should output 2
+  (display (call/cc f))         ; Should output 2
 
   (display (+ 1 2 3 4 5 6
               (- 7 8 9 10)))   ; Variadic operators
@@ -30,5 +30,12 @@
   (display foo)
   (define foo "bar\"quoooo;ote\"'derp'''derp'quotes\'")      ; Reassign
   (display foo)
+
+  (if (= 1 2 3 4)
+    (display "HURRRRR FAIL"))
+  (if (= 1 1 1 1)
+    (display "OK"))
+
+  (display (list "True:" #t "False" #f))
   foo
   )

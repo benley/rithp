@@ -34,24 +34,25 @@ class Rithp
   end
 
   def add_globals(env)
-    ops = [:/, :>, :<, :>=, :<=, :==]
+    ops = [:/, :>, :<, :>=, :<=]
     ops.each { |op| env[op] = ->(a, b) { a.send(op, b) } }
     env.update(
-      :+ =>    ->(*xs)  { xs.reduce(0, :+) },
-      :- =>    ->(*xs)  { xs.reduce(:-) },
-      :* =>    ->(*xs)  { xs.reduce(1, :*) },
+      :'=' =>  ->(*xs)  { xs.map { |x| x == xs.first }.all? },
+      :+   =>  ->(*xs)  { xs.reduce(0, :+) },
+      :-   =>  ->(*xs)  { xs.reduce(:-) },
+      :*   =>  ->(*xs)  { xs.reduce(1, :*) },
       append:  ->(x, y) { x + y },
       car:     ->(x)    { x[0] },
       cdr:     ->(x)    { x[1..-1] },
       cons:    ->(x, y) { [x] + y },
-      display: ->(x)    { puts x.inspect },
+      display: ->(x)    { print x },
       length:  ->(x)    { x.length },
       list:    ->(*xs)  { xs },
       list?:   ->(x)    { x.is_a? Array },
       not:     ->(x)    { !x },
       null?:   ->(x)    { x.nil? },
       symbol?: ->(x)    { x.is_a? Symbol },
-      callcc: lambda do |x|
+      :'call/cc' => lambda do |x|
         func = reval(x, env)
         callcc { |cont| func.call(->(z) { cont.call(z) }) }
       end)
@@ -83,11 +84,12 @@ class Rithp
   def atom(s)
     return '[' if s == '('
     return ']' if s == ')'
-    if s =~ /^-?\d+$/ ||    # integers
-       s =~ /^-?\d*\.\d+$/  # decimals
-      return s
-    end
-    ':' + s
+    return 'true' if s == '#t'
+    return 'false' if s == '#f'
+    literals = [/^-?\d+$/,      # integers
+                /^-?\d*\.\d+$/] # decimals
+    return s if s.match(Regexp.union(literals))
+    s.intern.inspect  # effectively ':' + s
   end
 
   def parse(src)
@@ -96,7 +98,7 @@ class Rithp
                 .join(' ')
                 .gsub(' ]', ']')
                 .gsub(/([^\[]) /, '\1, ')
-                .gsub(":#{STR_TAG}") { |m| @pp_strings.pop.inspect }
+                .gsub(":#{STR_TAG}") { @pp_strings.pop.inspect }
     Kernel.eval(ast)
   end
 
